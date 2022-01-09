@@ -1,0 +1,63 @@
+syntax = "proto3";
+package session;
+
+import "google/protobuf/empty.proto";
+
+enum Type {
+  Shell = 0;
+  Graphical = 1;
+  Service = 2;
+}
+enum Isolation {
+  Container = 0;
+  VM = 1;
+}
+
+message Resources {
+  int64 CPU = 1;
+  int64 Memory = 2;
+  int64 Disk = 3;
+  bool GPU = 4;
+}
+
+message Session {
+  Type type = 1;
+  Isolation isolation = 2;
+  string application = 3;
+  Resources resources = 4;
+  string owner = 5;
+  string identifier = 6;
+}
+
+message SessionCreateRequest {
+  Type type = 1;
+  Isolation isolation = 2;
+  string application = 3;
+  Resources resources = 4;
+  string owner = 5;
+}
+
+message SessionCreateResponse {
+  bool successful = 1;
+  string error_message = 2;
+  string identifier = 3;
+}
+
+message SessionList {
+  repeated Session sessions = 1;
+}
+
+message SessionGetRequest {
+  string identifier = 1;
+}
+
+message SessionGetResponse {
+  bool successful = 1;
+  Session session = 2;
+}
+
+service SessionService {
+  rpc Create(SessionCreateRequest) returns (SessionCreateResponse);
+  rpc Get(SessionGetRequest) returns (SessionGetResponse);
+  rpc List(google.protobuf.Empty) returns (SessionList);
+}
